@@ -9,12 +9,17 @@ from firebase_admin import credentials, firestore, storage
 
 
 def init_firebase():
-    # Evita inicializar Firebase más de una vez
     if not firebase_admin._apps:
-        # Aquí cargas la llave privada que descargaste
-        cred = credentials.Certificate("firebase-credentials.json")
+        # Intenta leer la credencial desde una variable de entorno (para Vercel)
+        # Si no existe, busca el archivo local (para cuando programas en tu PC)
+        if os.getenv("FIREBASE_SERVICE_ACCOUNT"):
+            cred_dict = json.loads(os.getenv("FIREBASE_SERVICE_ACCOUNT"))
+            cred = credentials.Certificate(cred_dict)
+        else:
+            cred = credentials.Certificate("backend/firebase-credentials.json")
+            
         firebase_admin.initialize_app(cred, {
-            'storageBucket': 'sense-and-goods.firebasestorage.app' # Cambia esto por tu bucket real
+            'storageBucket': 'sense-and-goods.firebasestorage.app'
         })
     return firestore.client()
 
