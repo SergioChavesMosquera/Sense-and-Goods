@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/logo_nombre.png" type="image/x-icon">
+    <title>S&G | Acceso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/global.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        body, main { background-color: #121212 !important; }
+
+        .auth-container {
+            background-color: #1a1a1a !important;
+            border: 1px solid #d4af37 !important;
+            border-radius: 8px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .auth-container input {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+            border: 1px solid #444 !important;
+            border-radius: 4px;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        .auth-container input:focus { border-color: #d4af37 !important; outline: none; }
+
+        .btn-gold {
+            background-color: #d4af37; color: #000; border: none;
+            padding: 12px; font-weight: bold; font-family: 'Montserrat', sans-serif;
+            cursor: pointer; border-radius: 4px; transition: all 0.3s ease;
+            width: 100%; font-size: 0.85rem; letter-spacing: 1px;
+        }
+        .btn-gold:hover { background-color: #b5952f; transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent; color: #d4af37;
+            border: 1px solid #d4af37; padding: 12px;
+            font-weight: bold; font-family: 'Montserrat', sans-serif;
+            cursor: pointer; border-radius: 4px; transition: all 0.3s ease;
+            width: 100%; font-size: 0.85rem; letter-spacing: 1px;
+        }
+        .btn-outline:hover { background: #d4af37; color: #000; }
+
+        /* Botón Google */
+        .btn-google {
+            background: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 12px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.25s ease;
+            width: 100%;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .btn-google:hover { background: #f5f5f5; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+        .divider {
+            display: flex; align-items: center; gap: 12px;
+            margin: 18px 0; color: #444; font-size: 0.75rem;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px; background: #333;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+    <div id="header-container"></div>
+
+    <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+        <div class="auth-container">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="./assets/img/logo_nombre.png" alt="Sense & Goods Logo" style="max-width: 200px; height: auto;">
+            </div>
+            <p style="text-align: center; margin-bottom: 25px; color: #888; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Accede a tu cuenta</p>
+
+            <!-- Google -->
+            <button class="btn-google" onclick="loginConGoogle()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.1 0 5.8 1.1 8 2.9l6-6C34.5 3.1 29.6 1 24 1 14.8 1 7 6.7 3.7 14.6l7 5.4C12.4 13.6 17.7 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-16.9z"/>
+                    <path fill="#FBBC05" d="M10.7 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.7-4.6l-7-5.4A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.5 10.8l7.5-5.7-.3-.5z"/>
+                    <path fill="#34A853" d="M24 47c5.4 0 10-1.8 13.3-4.8l-7.4-5.7c-1.8 1.2-4.1 2-6.8 2-6.2 0-11.5-4.2-13.4-9.9l-7.5 5.7C7 41.3 14.9 47 24 47z"/>
+                </svg>
+                Continuar con Google
+            </button>
+
+            <div class="divider">o ingresa con tu correo</div>
+
+            <input type="email"    id="email"    placeholder="Tu correo electrónico">
+            <input type="password" id="password" placeholder="Tu contraseña">
+
+            <button class="btn-gold"    onclick="iniciarSesion()" style="margin-bottom: 12px;">INGRESAR</button>
+            <button class="btn-outline" onclick="window.location.href='register.html'">CREA UNA CUENTA</button>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw",
+            authDomain: "sense-and-goods.firebaseapp.com",
+            projectId: "sense-and-goods",
+            storageBucket: "sense-and-goods.firebasestorage.app",
+            messagingSenderId: "710405027415",
+            appId: "1:710405027415:web:53c02bf3178e7515f69512"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    </script>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

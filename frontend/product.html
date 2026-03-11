@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/logo_nombre.png" type="image/x-icon">
+    <title>S&G | Detalle de Producto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/global.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    
+    <style>
+        body { background-color: #121212; color: #e0e0e0; }
+
+        .product-detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            padding: 50px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .gallery { display: flex; gap: 15px; }
+        .thumbnails { display: flex; flex-direction: column; gap: 10px; }
+
+        .thumbnails img {
+            width: 75px; height: 75px; object-fit: cover;
+            border-radius: 4px; cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease, opacity 0.2s ease;
+            opacity: 0.6;
+        }
+        .thumbnails img:hover { opacity: 1; }
+        .thumbnails img.active { border-color: #D4AF37; opacity: 1; }
+
+        .main-img-wrapper {
+            flex: 1; border-radius: 8px; overflow: hidden;
+            background-color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            cursor: zoom-in; position: relative;
+        }
+        .main-img {
+            width: 100%; height: 520px; object-fit: contain; display: block;
+            transition: transform 0.4s ease, opacity 0.3s ease;
+            transform-origin: center center;
+        }
+        .main-img-wrapper:hover .main-img { transform: scale(1.07); }
+
+        .info-panel {
+            background-color: #1E1E1E; color: #cccccc;
+            border: 1px solid #333; border-radius: 8px;
+            padding: 35px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .info-panel h1 { color: #ffffff; margin: 8px 0 0; font-size: 1.6rem; }
+        .info-categoria { color: #D4AF37; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .price-tag { color: #D4AF37 !important; font-size: 2rem; font-weight: bold; margin: 15px 0; }
+        .info-panel p { line-height: 1.7; color: #aaa; margin: 0 0 20px; }
+        .info-panel hr { border: 0.5px solid #333; margin: 20px 0; }
+
+        .seccion-label {
+            display: block; color: #fff; margin-bottom: 10px;
+            font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .badge-opcion {
+            padding: 8px 15px; border-radius: 4px; font-weight: bold;
+            display: inline-block; transition: all 0.2s ease;
+            user-select: none; font-size: 0.9rem;
+        }
+        .badge-disponible { background: #2a2a2a; border: 1px solid #555; color: #ccc; cursor: pointer; }
+        .badge-disponible:hover { border-color: #D4AF37; color: white; }
+        .badge-seleccionado { background: #D4AF37 !important; color: black !important; border-color: #D4AF37 !important; }
+        .badge-agotado { background: #1a1a1a; border: 1px solid #333; color: #444; text-decoration: line-through; cursor: not-allowed; }
+
+        .acordes-container { margin-top: 20px; }
+        .acorde-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.82rem; }
+        .acorde-label { width: 95px; color: #bbb; flex-shrink: 0; }
+        .acorde-barra-bg { flex: 1; background: #111; height: 12px; border-radius: 6px; overflow: hidden; border: 1px solid #2a2a2a; }
+        .acorde-barra-fill { height: 100%; border-radius: 6px; transition: width 0.8s ease; }
+
+        .buy-btn {
+            background: #D4AF37; color: #000; width: 100%; padding: 16px;
+            border: none; font-weight: 800; font-size: 1rem; cursor: pointer;
+            border-radius: 4px; text-transform: uppercase; letter-spacing: 2px;
+            margin-top: 25px; transition: all 0.3s ease;
+        }
+        .buy-btn:hover { background: #b5952f; transform: translateY(-2px); }
+        .buy-btn:disabled { background: #444; color: #777; cursor: not-allowed; transform: none; }
+
+        .alerta-personalizada {
+            position: fixed; bottom: 30px; right: 30px; background: #1a1a1a;
+            color: white; padding: 15px 25px; border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem; z-index: 9999; opacity: 0; transform: translateX(110%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: flex; align-items: center; gap: 10px; max-width: 320px;
+        }
+        .alerta-personalizada.show { opacity: 1; transform: translateX(0); }
+        .alerta-success { border-left: 4px solid #D4AF37; }
+        .alerta-error   { border-left: 4px solid #F44336; }
+        .alerta-warning { border-left: 4px solid #ff9800; }
+
+        @media (max-width: 768px) {
+            .product-detail-container { grid-template-columns: 1fr; gap: 30px; padding: 30px 5%; }
+            .main-img { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="header-container"></div>
+
+    <main>
+        <div id="detalle-contenido" class="product-detail-container">
+            <p style="color:#D4AF37; text-align:center; grid-column:1/-1; padding:80px 0;">Cargando producto...</p>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="assets/js/layout.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw",
+            authDomain: "sense-and-goods.firebaseapp.com",
+            projectId: "sense-and-goods",
+            storageBucket: "sense-and-goods.firebasestorage.app",
+            messagingSenderId: "710405027415",
+            appId: "1:710405027415:web:53c02bf3178e7515f69512"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+        let tallaSeleccionada = "";
+        let productoActual = null;
+
+        const coloresAcordes = {
+            'Dulce': '#e91e63', 'Lactonico': '#f5f5f5', 'Avainillado': '#ffe082',
+            'Coco': '#d7ccc8', 'Almizclado': '#b0bec5', 'Citrico': '#ffeb3b',
+            'Floral': '#ce93d8', 'Amaderado': '#8d6e63', 'Frutal': '#ff9800',
+            'Especiado': '#ff5722'
+        };
+
+        // Etiqueta y subtítulo según tipo de prenda
+        const etiquetasTalla = {
+            'camiseta': 'Talla',
+            'camisa':   'Talla',
+            'pantalon': 'Talla de cintura (pulgadas)',
+            'zapatos':  'Talla de zapato'
+        };
+
+        const nombresTipo = {
+            'camiseta': 'Camiseta',
+            'camisa':   'Camisa',
+            'pantalon': 'Pantalón',
+            'zapatos':  'Zapatos'
+        };
+
+        function mostrarAlerta(mensaje, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta-personalizada alerta-${tipo}`;
+            const iconos = { success: '✨', error: '❌', warning: '⚠️' };
+            alerta.innerHTML = `<span>${iconos[tipo]}</span><span>${mensaje}</span>`;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.classList.add('show'), 50);
+            setTimeout(() => {
+                alerta.classList.remove('show');
+                setTimeout(() => alerta.remove(), 400);
+            }, 3500);
+        }
+
+        function cambiarImagenPrincipal(nuevaSrc, thumbEl) {
+            const mainImg = document.getElementById('main-pic');
+            mainImg.style.opacity = '0';
+            setTimeout(() => { mainImg.src = nuevaSrc; mainImg.style.opacity = '1'; }, 200);
+            document.querySelectorAll('.thumbnails img').forEach(t => t.classList.remove('active'));
+            thumbEl.classList.add('active');
+        }
+
+        function seleccionarTalla(elemento, talla) {
+            document.querySelectorAll('.badge-disponible').forEach(b => b.classList.remove('badge-seleccionado'));
+            elemento.classList.add('badge-seleccionado');
+            tallaSeleccionada = talla;
+        }
+
+        async function cargarDetalle() {
+            if (!productId) {
+                document.getElementById('detalle-contenido').innerHTML = '<p style="color:#F44336;text-align:center;grid-column:1/-1;">Producto no encontrado.</p>';
+                return;
+            }
+
+            try {
+                const doc = await db.collection("productos").doc(productId).get();
+
+                if (!doc.exists) {
+                    document.getElementById('detalle-contenido').innerHTML = '<p style="color:#F44336;text-align:center;grid-column:1/-1;">Producto no encontrado.</p>';
+                    return;
+                }
+
+                const p = { id: doc.id, ...doc.data() };
+                productoActual = p;
+
+                const container = document.getElementById('detalle-contenido');
+                let infoEspecifica = '';
+                let subtitulo = p.categoria;
+
+                // =====================
+// ROPA
+// =====================
+if (p.categoria === 'ropa') {
+    const tipo = p.tipo_ropa || '';
+    const etiqueta = etiquetasTalla[tipo] || 'Tallas disponibles';
+    const nombreTipo = nombresTipo[tipo] || '';
+
+    subtitulo = nombreTipo ? `Ropa · ${nombreTipo}` : 'Ropa';
+
+    const stockObj = p.stock || p.stock_tallas || {};
+
+    // Orden fijo según tipo de prenda
+    const ordenTallas = {
+        'camiseta': ['XS','S','M','L','XL','XXL'],
+        'camisa':   ['XS','S','M','L','XL','XXL'],
+        'pantalon': ['28','29','30','31','32','33','34','36','38','40'],
+        'zapatos':  ['35','36','37','38','39','40','41','42','43','44','45']
+    };
+    const orden = ordenTallas[tipo] || Object.keys(stockObj);
+
+    let tallasHtml = '';
+    let hayStock = false;
+
+    for (const talla of orden) {
+        const cantidad = stockObj[talla] ?? 0;
+        if (cantidad > 0) {
+            tallasHtml += `
+                <span class="badge-opcion badge-disponible" onclick="seleccionarTalla(this, '${talla}')">
+                    ${talla}
+                    <small style="color:#999; font-weight:400; font-size:0.7rem;">(${cantidad})</small>
+                </span>`;
+            hayStock = true;
+        } else {
+            tallasHtml += `<span class="badge-opcion badge-agotado">${talla}</span>`;
+        }
+    }
+
+    if (!hayStock) tallasHtml = '<span style="color:#F44336; font-weight:bold;">Producto Agotado</span>';
+
+    infoEspecifica = `
+        <span class="seccion-label">${etiqueta}</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">${tallasHtml}</div>
+    `;
+
+                // =====================
+                // PERFUME
+                // =====================
+                } else {
+                    subtitulo = 'Perfume';
+
+                    let opcionesHtml = '';
+                    if (p.volumen_ml && p.volumen_ml.length > 0) {
+                        p.volumen_ml.forEach(vol => {
+                            opcionesHtml += `<span class="badge-opcion badge-disponible badge-seleccionado" style="cursor:default;">${vol} ml</span>`;
+                        });
+                    } else {
+                        opcionesHtml = '<span style="color:#aaa;">Única presentación</span>';
+                    }
+
+                    let acordesHtml = '';
+                    if (p.acordes && Object.keys(p.acordes).length > 0) {
+                        const ordenados = Object.entries(p.acordes).sort((a, b) => b[1] - a[1]);
+                        acordesHtml = `
+                            <div class="acordes-container">
+                                <span class="seccion-label" style="color:#D4AF37;">Acordes principales</span>
+                                ${ordenados.map(([nombre, valor]) => {
+                                    const pct = valor * 10;
+                                    const color = coloresAcordes[nombre] || '#D4AF37';
+                                    const label = nombre === 'Lactonico' ? 'Lactónico' : nombre;
+                                    return `
+                                        <div class="acorde-row">
+                                            <span class="acorde-label">${label}</span>
+                                            <div class="acorde-barra-bg">
+                                                <div class="acorde-barra-fill" style="width:${pct}%; background:${color}; box-shadow:0 0 6px ${color}66;"></div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    }
+
+                    infoEspecifica = `
+                        <span class="seccion-label">Tamaños disponibles</span>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">${opcionesHtml}</div>
+                        <span class="seccion-label">Notas</span>
+                        <p style="color:#aaa; margin-bottom:0;">${p.notas || 'No especificadas'}</p>
+                        ${acordesHtml}
+                    `;
+                }
+
+                // Miniaturas
+                const imagenes = p.imagenes || [];
+                const miniaturasHtml = imagenes.map((img, i) => `
+                    <img src="${img}" class="${i === 0 ? 'active' : ''}"
+                         onclick="cambiarImagenPrincipal('${img}', this)"
+                         alt="${p.nombre}">
+                `).join('');
+
+                container.innerHTML = `
+                    <div class="gallery">
+                        <div class="thumbnails">${miniaturasHtml}</div>
+                        <div class="main-img-wrapper">
+                            <img id="main-pic" src="${imagenes[0] || ''}" class="main-img" alt="${p.nombre}">
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <span class="info-categoria">${subtitulo}</span>
+                        <h1>${p.nombre}</h1>
+                        <p class="price-tag">$${p.precio.toLocaleString('es-CO')}</p>
+                        <p>${p.descripcion || ''}</p>
+                        <hr>
+                        ${infoEspecifica}
+                        <button class="buy-btn" onclick="agregarAlCarrito()">AÑADIR AL CARRITO</button>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error(error);
+                mostrarAlerta("Error al cargar el producto", "error");
+            }
+        }
+
+        async function agregarAlCarrito() {
+            if (productoActual?.categoria === 'ropa' && !tallaSeleccionada) {
+                mostrarAlerta("Selecciona una talla antes de continuar", "warning");
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                mostrarAlerta("Debes iniciar sesión para comprar", "warning");
+                setTimeout(() => window.location.href = "login.html", 2000);
+                return;
+            }
+
+            try {
+                const itemCarrito = {
+                    producto_id: productoActual.id,
+                    nombre: productoActual.nombre,
+                    precio: productoActual.precio,
+                    imagen: productoActual.imagenes[0],
+                    categoria: productoActual.categoria,
+                    tipo_ropa: productoActual.tipo_ropa || null,
+                    talla_o_volumen: productoActual.categoria === 'ropa' ? tallaSeleccionada : 'Única',
+                    cantidad: 1,
+                    fechaAgregado: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection("usuarios").doc(user.uid).collection("carrito").add(itemCarrito);
+                mostrarAlerta("Producto añadido al carrito", "success");
+
+                tallaSeleccionada = "";
+                document.querySelectorAll('.badge-disponible').forEach(b => b.classList.remove('badge-seleccionado'));
+
+            } catch (err) {
+                console.error(err);
+                mostrarAlerta("Hubo un problema al añadir al carrito", "error");
+            }
+        }
+
+        cargarDetalle();
+    </script>
+</body>
+</html>

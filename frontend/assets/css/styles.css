@@ -1,0 +1,575 @@
+/* =========================================
+   SENSE & GOODS - Component Styles
+   ========================================= */
+
+/* --- NAVEGACIÓN --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background-color: var(--sg-text-main); /* Negro mate para el menú */
+    color: var(--sg-bg-primary);
+    border-bottom: 2px solid var(--sg-accent-strong);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-links { list-style: none; display: flex; gap: 30px; }
+.nav-links a { color: var(--sg-bg-primary); transition: 0.3s; font-weight: 600; }
+.nav-links a:hover { color: var(--sg-accent-strong); }
+
+/* --- HERO SECTION (Banner Principal) --- */
+.hero {
+    text-align: center;
+    padding: 120px 20px;
+    background: linear-gradient(rgba(26, 26, 26, 0.8), rgba(26, 26, 26, 0.8)), url('../img/hero-bg.jpg') center/cover;
+    background-color: var(--sg-text-main);
+    color: var(--sg-bg-primary);
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    letter-spacing: 15px; /* Mucho espacio entre letras da el toque de lujo */
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    letter-spacing: 5px;
+    color: var(--sg-accent-strong);
+    text-transform: uppercase;
+}
+
+/* --- PRODUCTOS (Index - Estilo Premium) --- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 40px;
+    padding: 40px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background-color: transparent; /* Sin fondo para un look más limpio */
+    border: none; 
+    transition: all 0.4s ease;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+}
+
+.product-card img { 
+    width: 100%; 
+    height: 380px; /* Fotos más altas y estilizadas */
+    object-fit: cover; 
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: 0.4s;
+    background-color: white; 
+}
+
+.product-card:hover img {
+    box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+
+.product-card p.category {
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: #888;
+    text-transform: uppercase;
+    margin: 20px 0 5px;
+}
+
+.product-card h3 { 
+    color: var(--sg-text-main); 
+    margin: 5px 0; 
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.product-card .price {
+    color: var(--sg-accent-strong);
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.product-card button {
+    background: transparent;
+    color: var(--sg-text-main);
+    border: 1px solid var(--sg-text-main);
+    padding: 10px 20px;
+    width: 80%;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+}
+
+.product-card button:hover {
+    background: var(--sg-text-main);
+    color: var(--sg-bg-primary);
+    border-color: var(--sg-text-main);
+}
+
+/* --- DETALLE DE PRODUCTO --- */
+.product-detail-container { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; /* Divide la pantalla en dos mitades iguales */
+    gap: 50px; 
+    padding: 50px 5%; 
+    max-width: 1200px; 
+    margin: auto; 
+    align-items: start; /* Evita que el panel se estire a lo alto de la foto */
+}
+
+.gallery { display: flex; gap: 20px; }
+.thumbnails { display: flex; flex-direction: column; gap: 15px; }
+
+.thumbnails img { 
+    width: 80px; height: 80px; object-fit: cover; 
+    cursor: pointer; border: 2px solid transparent; 
+    border-radius: 8px; transition: 0.3s;
+}
+
+.thumbnails img:hover, .thumbnails img.active { border-color: var(--sg-accent-strong); }
+
+.main-img { 
+    width: 100%; max-height: 600px; border-radius: 8px; 
+    object-fit: contain; background-color: white; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.info-panel { 
+    background: white; padding: 40px; border-radius: 8px; 
+    border: 1px solid #EAEAEA; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.price-tag { font-size: 2.5rem; color: var(--sg-accent-strong); margin: 20px 0; font-weight: bold; }
+
+.tallas-container { display: flex; gap: 10px; margin-bottom: 20px; }
+
+.talla-badge {
+    background: var(--sg-bg-primary); color: var(--sg-text-main);
+    padding: 10px 20px; border-radius: 4px; border: 1px solid #CCC;
+    font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+
+.talla-badge:hover, .talla-badge.selected {
+    border-color: var(--sg-accent-strong); background: var(--sg-accent-strong); color: white;
+}
+
+.buy-btn { 
+    background: var(--sg-accent-strong); color: var(--sg-text-main); 
+    width: 100%; padding: 18px; border: none; font-weight: 800; 
+    font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; 
+    border-radius: 4px; text-transform: uppercase; margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+.buy-btn:hover { background: #b5952f; transform: translateY(-2px); }
+
+/* --- BOTONES GLOBALES --- */
+button {
+    background: var(--sg-accent-strong); color: var(--sg-text-main); 
+    border: none; padding: 12px; font-weight: bold; cursor: pointer; 
+    border-radius: 4px; transition: 0.3s;
+}
+button:hover { background: #b5952f; }
+
+/* --- LOGIN (La clase centrada) --- */
+.login-page-wrapper {
+    display: flex; justify-content: center; align-items: center; 
+    min-height: 100vh; width: 100%;
+}
+
+.auth-container { 
+    background: white; padding: 40px; border-radius: 8px; 
+    border: 1px solid var(--sg-accent-strong); width: 350px; 
+    text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+}
+
+.auth-container h2 { color: var(--sg-accent-strong); }
+
+.auth-container input { 
+    width: 100%; padding: 12px; margin: 10px 0; background: #F5F5F5; 
+    border: 1px solid #DDD; color: var(--sg-text-main); 
+    border-radius: 4px; box-sizing: border-box; font-family: var(--font-main);
+}
+
+.auth-container input:focus { border-color: var(--sg-accent-strong); outline: none; }
+
+.btn-outline { 
+    background: none; border: 1px solid var(--sg-text-main); 
+    color: var(--sg-text-main); width: 100%; margin-top: 10px; 
+}
+.btn-outline:hover { background: var(--sg-text-main); color: white; }
+
+/* assets/css/styles.css */
+
+/* --- ESTILOS PARA EL NUEVO LOGO EN EL NAVBAR NEGRO MATE --- */
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.brand-logo-img {
+    height: 70px; /* Ajusta este valor para que el logo completo se vea bien en tu menú */
+    width: auto; /* Mantiene la proporción de la imagen */
+    object-fit: contain; /* Asegura que la imagen no se corte */
+    transition: transform 0.3s ease; /* Un pequeño efecto al pasar el mouse */
+}
+
+.logo-link:hover .brand-logo-img {
+    transform: scale(1.05); /* Se agranda un 5% sutilmente */
+}
+
+/* =========================================
+   SENSE & GOODS - Estilos Premium
+   ========================================= */
+
+/* --- Sección Hero (El bloque central con el logo) --- */
+.hero {
+    /* 1. Unificamos el fondo a Negro Puro para combinar con el menú */
+    background-color: #000; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* 2. Le damos mucho espacio para que respire y se vea de lujo */
+    padding: 100px 20px; 
+    margin-top: 0; /* Asegurar que no haya espacio con el menú */
+}
+
+.hero img {
+    /* 3. Una vez que tengas tu PNG transparente, este código lo centrará */
+    max-width: 600px; /* Limitar el tamaño para que sea elegante */
+    width: 100%;
+    height: auto;
+}
+
+/* --- Título de Sección --- */
+.section-title {
+    color: #1A1A1A; /* Un negro mate suave */
+    text-transform: uppercase;
+    letter-spacing: 3px; /* Espacio entre letras para sofisticación */
+    font-weight: 300;
+    text-align: center;
+    margin: 60px 0 40px;
+}
+
+/* --- Catálogo de Productos (Look Premium Limpio) --- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 50px; /* Mucho espacio entre productos */
+    padding: 50px 5%;
+    background-color: #F9F9F6; /* Fondo crema original */
+}
+
+.product-card {
+    background: transparent; /* Quitar la tarjeta blanca de fondo */
+    border: none; /* Eliminar bordes claros */
+    padding: 0;
+    box-shadow: none; /* Eliminar sombras pesadas */
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px); /* Efecto sutil de "levitación" */
+}
+
+.product-card img {
+    width: 100%;
+    /* Formato más alto y estilizado para ropa, como Zara o Massimo Dutti */
+    height: 400px; 
+    object-fit: cover; /* Asegura que la ropa se vea perfecta */
+    border-radius: 4px; /* Un borde muy suave */
+    margin-bottom: 25px;
+}
+
+.product-card p.category {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.product-card h3 {
+    font-size: 1.2rem;
+    color: #1A1A1A;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.product-card .price {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #A3805B; /* Un dorado/marrón más suave y natural */
+    margin-bottom: 25px;
+}
+
+/* --- Botón Minimalista de Outline (Lujo) --- */
+.product-card button {
+    background: transparent;
+    color: #1A1A1A;
+    border: 2px solid #1A1A1A; /* Solo el borde */
+    padding: 12px 35px;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.product-card button:hover {
+    background: #1A1A1A; /* Se llena al hover */
+    color: #F9F9F6; /* Fondo crema */
+}
+
+.cart-item-link {
+    display: block;
+    cursor: pointer;
+}
+/* Para que el nombre no parezca un link azul de los 90 */
+.cart-item-info a {
+    text-decoration: none;
+    color: white; 
+}
+.cart-item-info a:hover {
+    color: #d4af37; /* El dorado que usas en el logo */
+}
+
+/* Quita el subrayado y mantiene el color blanco/dorado */
+.cart-item-link, .cart-item-info a {
+    text-decoration: none;
+    color: inherit; /* Mantiene el color que ya tenías */
+    display: block;
+}
+
+/* Efecto visual al pasar el mouse por la imagen */
+.cart-item-link img:hover {
+    opacity: 0.8;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+/* Reemplaza estos dos bloques en tu styles.css */
+
+.sg-footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+    border-bottom: 1px solid #1f1f1f;
+    gap: 40px;
+}
+
+.sg-footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #1f1f1f;
+}
+
+.sg-footer-slogan {
+    display: none; /* El slogan ya está en el logo */
+}
+
+/* Nueva fila para las 3 columnas de info */
+.sg-footer-cols {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1.2fr;
+    gap: 60px;
+    width: 100%;
+    justify-items: center;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .sg-footer-cols {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        justify-items: start;
+    }
+}
+
+/* =========================================
+   FOOTER - Sense & Goods
+   ========================================= */
+
+.sg-footer {
+    background-color: #0a0a0a;
+    border-top: 1px solid #2a2a2a;
+    padding: 60px 5% 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.sg-footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+    border-bottom: 1px solid #1f1f1f;
+    gap: 40px;
+}
+
+.sg-footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #1f1f1f;
+}
+
+.sg-footer-logo {
+    height: 52px;
+    width: auto;
+    object-fit: contain;
+}
+
+.sg-footer-slogan {
+    display: none;
+}
+
+.sg-footer-cols {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1.2fr;
+    gap: 60px;
+    width: 100%;
+    justify-items: center;
+}
+
+.sg-footer-heading {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #D4AF37;
+    font-weight: 600;
+    margin: 0 0 20px;
+}
+
+.sg-footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sg-footer-links a {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.25s ease;
+}
+
+.sg-footer-links a:hover {
+    color: #D4AF37;
+}
+
+.sg-footer-icon {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.sg-footer-socials {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sg-social-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 400;
+    padding: 10px 14px;
+    border: 1px solid #222;
+    border-radius: 4px;
+    transition: all 0.25s ease;
+}
+
+.sg-social-btn:hover {
+    color: #D4AF37;
+    border-color: #D4AF37;
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.sg-footer-bottom {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sg-footer-bottom span {
+    font-size: 0.75rem;
+    color: #444;
+    letter-spacing: 0.5px;
+}
+
+.sg-footer-bottom-slogan {
+    letter-spacing: 3px !important;
+    color: #2a2a2a !important;
+    font-style: italic;
+}
+
+@media (max-width: 900px) {
+    .sg-footer-cols {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px 30px;
+    }
+}
+
+@media (max-width: 560px) {
+    .sg-footer-cols {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        justify-items: start;
+    }
+    .sg-footer-bottom {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+}

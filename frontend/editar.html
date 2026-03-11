@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S&G | Editar Producto</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        :root { --gold: #D4AF37; --dark-bg: #121212; --card-bg: #1E1E1E; }
+        body { background: var(--dark-bg); color: white; margin: 0; font-family: 'Montserrat', sans-serif;}
+        .edit-container { max-width: 600px; margin: 50px auto; padding: 30px; background: var(--card-bg); border: 1px solid var(--gold); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: var(--gold); margin-bottom: 20px;}
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #ccc; font-weight: bold;}
+        input, textarea { width: 100%; padding: 10px; box-sizing: border-box; background: #333; border: 1px solid #555; color: white; border-radius: 4px; font-family: 'Montserrat', sans-serif;}
+        textarea { resize: vertical; min-height: 80px; }
+        .btn-save { width: 100%; background: var(--gold); color: black; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 1rem; transition: 0.3s;}
+        .btn-save:hover { background: #b5952f; }
+        .btn-cancel { width: 100%; background: transparent; color: #ccc; border: 1px solid #555; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 1rem; margin-top: 10px; transition: 0.3s;}
+        .btn-cancel:hover { background: #444; }
+        
+        .tallas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .tallas-grid div { text-align: center; }
+        .tallas-grid label { margin-bottom: 5px; color: white; font-weight: normal; font-size: 0.9rem;}
+        
+        /* Ajuste para los labels de los acordes más pequeños */
+        .acordes-grid label { font-size: 0.75rem; color: #ccc; margin-bottom: 3px; font-weight: normal;}
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <div class="edit-container">
+        <h2>EDITAR PRODUCTO</h2>
+        <div id="loadingMessage" style="text-align: center; margin-bottom: 20px;">Cargando datos del producto...</div>
+        
+        <form id="formEditar" style="display: none;">
+            <div class="form-group">
+                <label>Nombre del Producto</label>
+                <input type="text" id="editNombre" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea id="editDescripcion" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Precio ($)</label>
+                <input type="number" id="editPrecio" required>
+            </div>
+
+            <div id="containerRopa" style="display: none; background: #2a2a2a; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px dashed #555;">
+                <label style="color: var(--gold); text-align: center;">Inventario por Tallas</label>
+                <div class="tallas-grid">
+                    <div><label>S</label><input type="number" id="stockS" value="0" min="0"></div>
+                    <div><label>M</label><input type="number" id="stockM" value="0" min="0"></div>
+                    <div><label>L</label><input type="number" id="stockL" value="0" min="0"></div>
+                    <div><label>XL</label><input type="number" id="stockXL" value="0" min="0"></div>
+                </div>
+            </div>
+
+            <div id="containerPerfume" style="display: none; background: #2a2a2a; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px dashed #555;">
+                <label style="color: var(--gold);">Presentaciones (ml)</label>
+                <input type="text" id="editVolumen" placeholder="Ej: 50, 100, 150">
+                <small style="color: #aaa;">Escribe los mililitros separados por coma.</small>
+
+                <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 15px;">
+                    <label style="color: var(--gold); text-align: center;">Acordes Principales</label>
+                    <div class="tallas-grid acordes-grid" style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));">
+                        <div><label>Dulce</label><input type="number" id="edit_acorde_Dulce" value="0" min="0" max="10"></div>
+                        <div><label>Lactónico</label><input type="number" id="edit_acorde_Lactonico" value="0" min="0" max="10"></div>
+                        <div><label>Avainillado</label><input type="number" id="edit_acorde_Avainillado" value="0" min="0" max="10"></div>
+                        <div><label>Coco</label><input type="number" id="edit_acorde_Coco" value="0" min="0" max="10"></div>
+                        <div><label>Almizclado</label><input type="number" id="edit_acorde_Almizclado" value="0" min="0" max="10"></div>
+                        <div><label>Cítrico</label><input type="number" id="edit_acorde_Citrico" value="0" min="0" max="10"></div>
+                        <div><label>Floral</label><input type="number" id="edit_acorde_Floral" value="0" min="0" max="10"></div>
+                        <div><label>Amaderado</label><input type="number" id="edit_acorde_Amaderado" value="0" min="0" max="10"></div>
+                        <div><label>Frutal</label><input type="number" id="edit_acorde_Frutal" value="0" min="0" max="10"></div>
+                        <div><label>Especiado</label><input type="number" id="edit_acorde_Especiado" value="0" min="0" max="10"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">GUARDAR CAMBIOS</button>
+            <button type="button" class="btn-cancel" onclick="window.location.href='stock.html'">Cancelar</button>
+        </form>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="assets/js/layout.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw", 
+            projectId: "sense-and-goods",
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        const params = new URLSearchParams(window.location.search);
+        const productoId = params.get('id');
+        let categoriaActual = ""; 
+
+        if (productoId) {
+            db.collection("productos").doc(productoId).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    categoriaActual = data.categoria;
+
+                    document.getElementById('editNombre').value = data.nombre;
+                    document.getElementById('editDescripcion').value = data.descripcion || "";
+                    document.getElementById('editPrecio').value = data.precio;
+
+                    if (categoriaActual === "ropa") {
+                        document.getElementById('containerRopa').style.display = "block";
+                        if (data.stock) {
+                            document.getElementById('stockS').value = data.stock.S || 0;
+                            document.getElementById('stockM').value = data.stock.M || 0;
+                            document.getElementById('stockL').value = data.stock.L || 0;
+                            document.getElementById('stockXL').value = data.stock.XL || 0;
+                        }
+                    } else if (categoriaActual === "perfume") {
+                        document.getElementById('containerPerfume').style.display = "block";
+                        if (data.volumen_ml) {
+                            document.getElementById('editVolumen').value = data.volumen_ml.join(", ");
+                        }
+                        
+                        // Llenar los acordes si existen
+                        if (data.acordes) {
+                            const listaNombresAcordes = ['Dulce', 'Lactonico', 'Avainillado', 'Coco', 'Almizclado', 'Citrico', 'Floral', 'Amaderado', 'Frutal', 'Especiado'];
+                            listaNombresAcordes.forEach(nombre => {
+                                if (data.acordes[nombre]) {
+                                    document.getElementById('edit_acorde_' + nombre).value = data.acordes[nombre];
+                                }
+                            });
+                        }
+                    }
+                    
+                    document.getElementById('loadingMessage').style.display = 'none';
+                    document.getElementById('formEditar').style.display = 'block';
+                } else {
+                    // SweetAlert si el producto no existe
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'El producto no existe.',
+                        icon: 'error',
+                        confirmButtonColor: '#d4af37',
+                        background: '#1a1a1a',
+                        color: '#ffffff'
+                    }).then(() => {
+                        window.location.href = "stock.html";
+                    });
+                }
+            }).catch(error => console.error("Error obteniendo producto:", error));
+        } else {
+            // SweetAlert si no hay ID
+            Swal.fire({
+                title: 'Advertencia',
+                text: 'No se especificó ningún producto para editar.',
+                icon: 'warning',
+                confirmButtonColor: '#d4af37',
+                background: '#1a1a1a',
+                color: '#ffffff'
+            }).then(() => {
+                window.location.href = "stock.html";
+            });
+        }
+
+        document.getElementById('formEditar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const datosActualizados = {
+                nombre: document.getElementById('editNombre').value,
+                descripcion: document.getElementById('editDescripcion').value,
+                precio: parseFloat(document.getElementById('editPrecio').value)
+            };
+
+            if (categoriaActual === "ropa") {
+                datosActualizados.stock = {
+                    S: parseInt(document.getElementById('stockS').value),
+                    M: parseInt(document.getElementById('stockM').value),
+                    L: parseInt(document.getElementById('stockL').value),
+                    XL: parseInt(document.getElementById('stockXL').value)
+                };
+            } else if (categoriaActual === "perfume") {
+                const volumenStr = document.getElementById('editVolumen').value;
+                datosActualizados.volumen_ml = volumenStr.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+                
+                // Recolectar y guardar los acordes actualizados
+                const listaNombresAcordes = ['Dulce', 'Lactonico', 'Avainillado', 'Coco', 'Almizclado', 'Citrico', 'Floral', 'Amaderado', 'Frutal', 'Especiado'];
+                let acordesFinales = {};
+                listaNombresAcordes.forEach(nombre => {
+                    const inputElement = document.getElementById('edit_acorde_' + nombre);
+                    if (inputElement) {
+                        const valor = parseInt(inputElement.value);
+                        if (valor > 0) acordesFinales[nombre] = valor;
+                    }
+                });
+                datosActualizados.acordes = acordesFinales;
+            }
+
+            try {
+                // Muestra un indicador de carga mientras guarda
+                Swal.fire({
+                    title: 'Guardando...',
+                    allowOutsideClick: false,
+                    background: '#1a1a1a',
+                    color: '#ffffff',
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                await db.collection("productos").doc(productoId).update(datosActualizados);
+                
+                // SweetAlert de éxito
+                Swal.fire({
+                    title: '¡Actualizado!',
+                    text: 'El producto se guardó correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#d4af37',
+                    background: '#1a1a1a',
+                    color: '#ffffff'
+                }).then(() => {
+                    window.location.href = "stock.html"; 
+                });
+
+            } catch (error) {
+                console.error("Error al actualizar:", error);
+                
+                // SweetAlert de error
+                Swal.fire({
+                    title: '¡Ups!',
+                    text: 'Hubo un error al guardar los cambios.',
+                    icon: 'error',
+                    confirmButtonColor: '#d4af37',
+                    background: '#1a1a1a',
+                    color: '#ffffff'
+                });
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/logo_nombre.png" type="image/x-icon">
+    <title>S&G | Admin Pro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/global.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    
+    <style>
+        body { 
+            background-color: #121212 !important; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh;
+            color: white;
+        }
+        main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+        .admin-container { 
+            background: #1a1a1a; padding: 40px; border-radius: 8px; 
+            border: 1px solid #d4af37; width: 100%; max-width: 700px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+        }
+        .form-group { margin-bottom: 20px; }
+        label { 
+            display: block; margin-bottom: 8px; color: #d4af37; 
+            font-size: 0.85rem; text-transform: uppercase; font-weight: bold; 
+        }
+        input[type="text"], input[type="number"], textarea, select { 
+            width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; 
+            color: white; border-radius: 4px; box-sizing: border-box; 
+            font-family: 'Montserrat', sans-serif; 
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus { 
+            outline: none; border-color: #d4af37; 
+        }
+        select option { background: #2a2a2a; }
+        .dynamic-section { 
+            background: #222; padding: 20px; border-radius: 4px; 
+            margin: 20px 0; border-left: 4px solid #d4af37; display: none; 
+        }
+        .row { display: flex; gap: 15px; flex-wrap: wrap; }
+        
+        /* Grid de tallas */
+        .tallas-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .tallas-grid.tallas-letras { grid-template-columns: repeat(6, 1fr); }
+        .tallas-grid.tallas-numeros { grid-template-columns: repeat(5, 1fr); }
+        .tallas-grid.tallas-zapatos { grid-template-columns: repeat(6, 1fr); }
+
+        .talla-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .talla-item label {
+            color: #aaa;
+            font-size: 0.75rem;
+            margin: 0;
+            text-transform: none;
+            font-weight: 400;
+        }
+        .talla-item input {
+            padding: 8px 4px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-post { 
+            width: 100%; padding: 15px; background: #d4af37; color: black; 
+            border: none; font-weight: bold; cursor: pointer; margin-top: 25px; 
+            border-radius: 4px; font-family: 'Montserrat', sans-serif; transition: 0.3s; 
+        }
+        .btn-post:hover { background: #b5952f; transform: translateY(-2px); }
+        .btn-post:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
+
+        .alerta-personalizada {
+            position: fixed; bottom: 30px; right: 30px; background: #1a1a1a;
+            color: white; padding: 15px 25px; border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem; z-index: 9999; opacity: 0; transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .alerta-personalizada.show { opacity: 1; transform: translateX(0); }
+        .alerta-success { border-left: 5px solid #4CAF50; }
+        .alerta-error   { border-left: 5px solid #F44336; }
+
+        .seccion-label {
+            color: #888;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <main>
+        <div class="admin-container" id="admin-panel">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="./assets/img/logo_nombre.png" alt="S&G Admin" style="max-width: 150px;">
+            </div>
+            <h2 style="text-align: center; margin-bottom: 30px; letter-spacing: 2px; color: #d4af37; font-weight: 300;">PANEL DE INVENTARIO S&G</h2>
+            
+            <form id="productForm" onsubmit="publicarProducto(event)">
+
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción General</label>
+                    <textarea id="descripcion" rows="3" required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="form-group" style="flex:1">
+                        <label>Precio ($)</label>
+                        <input type="number" id="precio" required>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label>Categoría</label>
+                        <select id="categoria" onchange="adaptarFormulario()" required>
+                            <option value="">Seleccione...</option>
+                            <option value="perfume">Perfume</option>
+                            <option value="ropa">Ropa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ======================== -->
+                <!-- SECCIÓN PERFUME          -->
+                <!-- ======================== -->
+                <div id="section-perfume" class="dynamic-section">
+                    <div class="form-group">
+                        <label>Variantes de Tamaño (ml) — separar por comas</label>
+                        <input type="text" id="volumen_ml" placeholder="50, 100, 150">
+                    </div>
+                    <div class="form-group">
+                        <label>Notas de Olor (Pirámide Olfativa)</label>
+                        <input type="text" id="notas" placeholder="Salida: Cítrica, Corazón: Jazmín...">
+                    </div>
+
+                    <div style="background: #1a1a1a; padding: 15px; border-radius: 5px; margin-top: 15px; border: 1px dashed #555;">
+                        <label style="color: #d4af37; text-align: center; margin-bottom: 5px; display: block;">Acordes Principales</label>
+                        <p style="font-size: 0.75rem; color: #aaa; text-align: center; margin-bottom: 15px;">Puntúa del 1 al 10. Deja en 0 los que no apliquen.</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;">
+                            <div><label style="font-size:0.7rem;color:white;">Dulce</label><input type="number" id="acorde_Dulce" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Lactónico</label><input type="number" id="acorde_Lactonico" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Avainillado</label><input type="number" id="acorde_Avainillado" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Coco</label><input type="number" id="acorde_Coco" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Almizclado</label><input type="number" id="acorde_Almizclado" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Cítrico</label><input type="number" id="acorde_Citrico" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Floral</label><input type="number" id="acorde_Floral" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Amaderado</label><input type="number" id="acorde_Amaderado" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Frutal</label><input type="number" id="acorde_Frutal" value="0" min="0" max="10" style="padding:8px;"></div>
+                            <div><label style="font-size:0.7rem;color:white;">Especiado</label><input type="number" id="acorde_Especiado" value="0" min="0" max="10" style="padding:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================== -->
+                <!-- SECCIÓN ROPA             -->
+                <!-- ======================== -->
+                <div id="section-ropa" class="dynamic-section">
+                    <div class="form-group">
+                        <label>Tipo de prenda</label>
+                        <select id="tipo_ropa" onchange="adaptarTallas()" required>
+                            <option value="">Seleccione tipo...</option>
+                            <option value="camiseta">Camiseta</option>
+                            <option value="camisa">Camisa</option>
+                            <option value="pantalon">Pantalón / Jean</option>
+                            <option value="zapatos">Zapatos</option>
+                        </select>
+                    </div>
+
+                    <!-- Tallas camiseta / camisa -->
+                    <div id="tallas-letras" style="display:none;">
+                        <span class="seccion-label">Stock por talla</span>
+                        <div class="tallas-grid tallas-letras">
+                            <div class="talla-item"><label>XS</label><input type="number" id="talla_xs" value="0" min="0"></div>
+                            <div class="talla-item"><label>S</label><input type="number" id="talla_s" value="0" min="0"></div>
+                            <div class="talla-item"><label>M</label><input type="number" id="talla_m" value="0" min="0"></div>
+                            <div class="talla-item"><label>L</label><input type="number" id="talla_l" value="0" min="0"></div>
+                            <div class="talla-item"><label>XL</label><input type="number" id="talla_xl" value="0" min="0"></div>
+                            <div class="talla-item"><label>XXL</label><input type="number" id="talla_xxl" value="0" min="0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tallas pantalón (cintura en pulgadas) -->
+                    <div id="tallas-pantalon" style="display:none;">
+                        <span class="seccion-label">Stock por talla de cintura (pulgadas)</span>
+                        <div class="tallas-grid tallas-numeros">
+                            <div class="talla-item"><label>28</label><input type="number" id="talla_28" value="0" min="0"></div>
+                            <div class="talla-item"><label>29</label><input type="number" id="talla_29" value="0" min="0"></div>
+                            <div class="talla-item"><label>30</label><input type="number" id="talla_30" value="0" min="0"></div>
+                            <div class="talla-item"><label>31</label><input type="number" id="talla_31" value="0" min="0"></div>
+                            <div class="talla-item"><label>32</label><input type="number" id="talla_32" value="0" min="0"></div>
+                            <div class="talla-item"><label>33</label><input type="number" id="talla_33" value="0" min="0"></div>
+                            <div class="talla-item"><label>34</label><input type="number" id="talla_34" value="0" min="0"></div>
+                            <div class="talla-item"><label>36</label><input type="number" id="talla_36" value="0" min="0"></div>
+                            <div class="talla-item"><label>38</label><input type="number" id="talla_38" value="0" min="0"></div>
+                            <div class="talla-item"><label>40</label><input type="number" id="talla_40" value="0" min="0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tallas zapatos (35-45) -->
+                    <div id="tallas-zapatos" style="display:none;">
+                        <span class="seccion-label">Stock por talla de zapato</span>
+                        <div class="tallas-grid tallas-zapatos">
+                            <div class="talla-item"><label>35</label><input type="number" id="talla_35" value="0" min="0"></div>
+                            <div class="talla-item"><label>36</label><input type="number" id="talla_36z" value="0" min="0"></div>
+                            <div class="talla-item"><label>37</label><input type="number" id="talla_37" value="0" min="0"></div>
+                            <div class="talla-item"><label>38</label><input type="number" id="talla_38z" value="0" min="0"></div>
+                            <div class="talla-item"><label>39</label><input type="number" id="talla_39" value="0" min="0"></div>
+                            <div class="talla-item"><label>40</label><input type="number" id="talla_40z" value="0" min="0"></div>
+                            <div class="talla-item"><label>41</label><input type="number" id="talla_41" value="0" min="0"></div>
+                            <div class="talla-item"><label>42</label><input type="number" id="talla_42" value="0" min="0"></div>
+                            <div class="talla-item"><label>43</label><input type="number" id="talla_43" value="0" min="0"></div>
+                            <div class="talla-item"><label>44</label><input type="number" id="talla_44" value="0" min="0"></div>
+                            <div class="talla-item"><label>45</label><input type="number" id="talla_45" value="0" min="0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imágenes -->
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Imágenes (Selecciona varias a la vez)</label>
+                    <input type="file" id="imagenes" multiple accept="image/*" required 
+                           style="padding: 10px; background: #2a2a2a; border: 1px dashed #d4af37; cursor: pointer;">
+                </div>
+
+                <button type="submit" id="btnPublicar" class="btn-post">PUBLICAR PRODUCTO</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script>
+        // Muestra/oculta sección perfume o ropa según categoría
+        function adaptarFormulario() {
+            const cat = document.getElementById('categoria').value;
+            document.getElementById('section-perfume').style.display = cat === 'perfume' ? 'block' : 'none';
+            document.getElementById('section-ropa').style.display   = cat === 'ropa'    ? 'block' : 'none';
+            // Resetear tipo de ropa al cambiar categoría
+            if (cat !== 'ropa') {
+                document.getElementById('tipo_ropa').value = '';
+                ocultarTodasLasTallas();
+            }
+        }
+
+        function ocultarTodasLasTallas() {
+            document.getElementById('tallas-letras').style.display  = 'none';
+            document.getElementById('tallas-pantalon').style.display = 'none';
+            document.getElementById('tallas-zapatos').style.display  = 'none';
+        }
+
+        // Muestra el bloque de tallas correcto según tipo de prenda
+        function adaptarTallas() {
+            const tipo = document.getElementById('tipo_ropa').value;
+            ocultarTodasLasTallas();
+
+            if (tipo === 'camiseta' || tipo === 'camisa') {
+                document.getElementById('tallas-letras').style.display = 'block';
+            } else if (tipo === 'pantalon') {
+                document.getElementById('tallas-pantalon').style.display = 'block';
+            } else if (tipo === 'zapatos') {
+                document.getElementById('tallas-zapatos').style.display = 'block';
+            }
+        }
+
+        // Lee el stock del bloque de tallas activo y devuelve un objeto limpio
+        function leerStock(tipo) {
+            const stock = {};
+
+            if (tipo === 'camiseta' || tipo === 'camisa') {
+                const tallas = ['xs','s','m','l','xl','xxl'];
+                tallas.forEach(t => {
+                    const val = parseInt(document.getElementById('talla_' + t).value) || 0;
+                    stock[t.toUpperCase()] = val;
+                });
+
+            } else if (tipo === 'pantalon') {
+                const tallas = ['28','29','30','31','32','33','34','36','38','40'];
+                tallas.forEach(t => {
+                    const val = parseInt(document.getElementById('talla_' + t).value) || 0;
+                    stock[t] = val;
+                });
+
+            } else if (tipo === 'zapatos') {
+                const tallas = ['35','36','37','38','39','40','41','42','43','44','45'];
+                // IDs con sufijo 'z' para zapatos (para evitar conflicto con pantalones en 36,38,40)
+                const idMap = {
+                    '35':'talla_35','36':'talla_36z','37':'talla_37','38':'talla_38z',
+                    '39':'talla_39','40':'talla_40z','41':'talla_41','42':'talla_42',
+                    '43':'talla_43','44':'talla_44','45':'talla_45'
+                };
+                tallas.forEach(t => {
+                    const val = parseInt(document.getElementById(idMap[t]).value) || 0;
+                    stock[t] = val;
+                });
+            }
+
+            return stock;
+        }
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw", 
+            authDomain: "sense-and-goods.firebaseapp.com", 
+            projectId: "sense-and-goods",
+            storageBucket: "sense-and-goods.firebasestorage.app", 
+            messagingSenderId: "710405027415",
+            appId: "1:710405027415:web:53c02bf3178e7515f69512"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+    </script>
+
+    <script src="assets/js/layout.js"></script>
+
+    <script>
+        // Seguridad: solo el admin puede ver esta página
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) { 
+                window.location.replace("login.html"); 
+            } else if (!user.email || user.email.trim().toLowerCase() !== "sergiochavesbt@gmail.com") {
+                window.location.replace("index.html"); 
+            }
+        });
+
+        function mostrarAlerta(mensaje, tipo) {
+            const alerta = document.createElement('div');
+            alerta.className = `alerta-personalizada ${tipo === 'exito' ? 'alerta-success' : 'alerta-error'}`;
+            alerta.innerHTML = `<span>${tipo === 'exito' ? '✅' : '❌'}</span> <span>${mensaje}</span>`;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.classList.add('show'), 100);
+            setTimeout(() => {
+                alerta.classList.remove('show');
+                setTimeout(() => alerta.remove(), 400);
+            }, 4000);
+        }
+
+        async function publicarProducto(e) {
+            e.preventDefault();
+
+            const categoria  = document.getElementById('categoria').value;
+            const tipo_ropa  = document.getElementById('tipo_ropa')?.value || '';
+
+            // Validar que eligió tipo de prenda si es ropa
+            if (categoria === 'ropa' && !tipo_ropa) {
+                mostrarAlerta("Selecciona el tipo de prenda antes de publicar.", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btnPublicar');
+            btn.innerText = "⏳ SUBIENDO IMÁGENES...";
+            btn.disabled = true;
+
+            try {
+                let nuevoProducto = {
+                    nombre:       document.getElementById('nombre').value,
+                    descripcion:  document.getElementById('descripcion').value,
+                    precio:       parseFloat(document.getElementById('precio').value),
+                    categoria:    categoria,
+                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                // Datos según categoría
+                if (categoria === 'perfume') {
+                    const volumen = document.getElementById('volumen_ml').value;
+                    nuevoProducto.volumen_ml = volumen ? volumen.split(',').map(v => v.trim()) : [];
+                    nuevoProducto.notas = document.getElementById('notas').value;
+
+                    const acordesNombres = ['Dulce','Lactonico','Avainillado','Coco','Almizclado','Citrico','Floral','Amaderado','Frutal','Especiado'];
+                    let acordes = {};
+                    acordesNombres.forEach(n => {
+                        const val = parseInt(document.getElementById('acorde_' + n).value);
+                        if (val > 0) acordes[n] = val;
+                    });
+                    nuevoProducto.acordes = acordes;
+
+                } else if (categoria === 'ropa') {
+                    nuevoProducto.tipo_ropa = tipo_ropa;
+                    nuevoProducto.stock = leerStock(tipo_ropa);
+                }
+
+                // Subir imágenes a Storage
+                const archivos = document.getElementById('imagenes').files;
+                let urlsImagenes = [];
+                for (let i = 0; i < archivos.length; i++) {
+                    const archivo = archivos[i];
+                    btn.innerText = `⏳ SUBIENDO IMAGEN ${i + 1} DE ${archivos.length}...`;
+                    const ref = storage.ref().child(`productos/${Date.now()}_${archivo.name}`);
+                    await ref.put(archivo);
+                    urlsImagenes.push(await ref.getDownloadURL());
+                }
+
+                nuevoProducto.imagenes = urlsImagenes;
+
+                btn.innerText = "💾 GUARDANDO EN FIRESTORE...";
+                await db.collection("productos").add(nuevoProducto);
+
+                mostrarAlerta("¡Producto publicado con éxito!", "exito");
+                document.getElementById('productForm').reset();
+                document.getElementById('section-perfume').style.display = 'none';
+                document.getElementById('section-ropa').style.display = 'none';
+                ocultarTodasLasTallas();
+
+            } catch (error) {
+                console.error("Error al subir:", error);
+                mostrarAlerta("Error al publicar. Revisa la consola.", "error");
+            } finally {
+                btn.innerText = "PUBLICAR PRODUCTO";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

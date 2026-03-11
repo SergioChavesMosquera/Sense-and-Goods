@@ -1,0 +1,16 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Firebase y credenciales
+firebase_key.json
+firebase-credentials.json
+.firebase/
+
+# Python
+__pycache__/
+*.pyc
+
+# Otros
+.DS_Store

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/logo_nombre.png" type="image/x-icon">
+    <title>S&G | Perfumes Exclusivos</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --dark-bg: #121212; --card-bg: #1E1E1E; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--dark-bg); color: white; margin: 0; }
+        
+        .page-title { text-align: center; color: var(--gold); margin: 50px 0 10px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase;}
+        .page-subtitle { text-align: center; color: #888; margin-bottom: 40px; font-size: 0.9rem;}
+        
+        .productos-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            padding: 20px 40px 80px; 
+            max-width: 1300px; 
+            margin: 0 auto; 
+        }
+
+        .card { 
+            background: transparent; border: none; cursor: pointer; 
+            transition: transform 0.3s ease; display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-5px); }
+        
+        .card-img-container {
+    width: 100%;
+    height: 380px;
+    background-color: #fff;
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+}
+
+.carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+    /* Sin width: 100% — el ancho lo define el contenido */
+}
+
+.carousel-track img {
+    width: 100%;          /* <-- clave: ancho fijo relativo al contenedor */
+    height: 380px;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+}
+
+        .carousel-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.45); color: white; border: none;
+            border-radius: 50%; width: 36px; height: 36px;
+            font-size: 1.4rem; cursor: pointer; opacity: 0;
+            transition: opacity 0.25s ease, background 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; z-index: 10;
+        }
+        .carousel-btn-left  { left: 10px; }
+        .carousel-btn-right { right: 10px; }
+        .carousel-btn:hover { background: rgba(0,0,0,0.75); }
+        .card:hover .carousel-btn { opacity: 1; }
+
+        .carousel-dots {
+            position: absolute; bottom: 10px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 5px;
+            opacity: 0; transition: opacity 0.25s ease; z-index: 10;
+        }
+        .card:hover .carousel-dots { opacity: 1; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: background 0.2s ease; }
+        .dot-active { background: white; }
+
+        .card-info { padding: 15px 0; display: flex; flex-direction: column; text-align: left; }
+        .card-price { color: #fff; font-size: 1.1rem; margin-bottom: 6px; font-weight: 600; }
+        .card-title { font-size: 1rem; color: #ddd; margin: 0 0 4px; font-weight: 400; }
+        .card-category { color: #888; font-size: 0.85rem; text-transform: capitalize; }
+        .loading { text-align: center; grid-column: 1 / -1; color: #888; padding: 50px; }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <h1 class="page-title">COLECCIÓN DE PERFUMES</h1>
+    <p class="page-subtitle">Encuentra tu fragancia ideal.</p>
+
+    <div class="productos-grid" id="catalogoPerfumes">
+        <div class="loading">Cargando perfumes...</div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="assets/js/layout.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw", 
+            projectId: "sense-and-goods",
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        const carruselState = {};
+        const imagenesMap = {};
+
+        function cambiarImagen(id, direccion, event) {
+            event.stopPropagation();
+            const imagenes = imagenesMap[id];
+            if (!imagenes || imagenes.length <= 1) return;
+
+            const track = document.getElementById(`track-${id}`);
+            const dotsContainer = document.getElementById(`dots-${id}`);
+
+            let currentIndex = carruselState[id] || 0;
+            currentIndex = (currentIndex + direccion + imagenes.length) % imagenes.length;
+            carruselState[id] = currentIndex;
+
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+            const dots = dotsContainer.querySelectorAll('.dot');
+            dots.forEach((dot, i) => dot.classList.toggle('dot-active', i === currentIndex));
+        }
+
+        async function cargarPerfumes() {
+            const catalogo = document.getElementById('catalogoPerfumes');
+
+            try {
+                const snapshot = await db.collection("productos").where("categoria", "==", "perfume").get();
+                catalogo.innerHTML = "";
+
+                if (snapshot.empty) {
+                    catalogo.innerHTML = "<div class='loading'>No hay perfumes disponibles en este momento.</div>";
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+
+                    const imagenes = (data.imagenes && data.imagenes.length > 0) ? data.imagenes : [];
+                    imagenesMap[id] = imagenes;
+                    carruselState[id] = 0;
+
+                    const tieneVarias = imagenes.length > 1;
+                    const precioFormateado = data.precio.toLocaleString('es-CO');
+
+                    let infoExtra = 'Perfume';
+                    if (data.volumen_ml && data.volumen_ml.length > 0) {
+                        infoExtra += ` • ${data.volumen_ml[0]}ml`;
+                    }
+
+                    const imagenesHTML = imagenes.length > 0
+                        ? imagenes.map(url => `<img src="${url}" alt="${data.nombre}">`).join('')
+                        : `<span style="color:black;">Sin imagen</span>`;
+
+                    const dotsHTML = tieneVarias
+                        ? `<div id="dots-${id}" class="carousel-dots">
+                            ${imagenes.map((_, i) => `<span class="dot ${i === 0 ? 'dot-active' : ''}"></span>`).join('')}
+                           </div>`
+                        : `<div id="dots-${id}"></div>`;
+
+                    const flechasHTML = tieneVarias
+                        ? `<button class="carousel-btn carousel-btn-left"  onclick="cambiarImagen('${id}', -1, event)">&#8249;</button>
+                           <button class="carousel-btn carousel-btn-right" onclick="cambiarImagen('${id}',  1, event)">&#8250;</button>`
+                        : '';
+
+                    catalogo.innerHTML += `
+                        <div class="card" onclick="window.location.href='product.html?id=${id}'">
+                            <div class="card-img-container">
+                                <div class="carousel-track" id="track-${id}">
+                                    ${imagenesHTML}
+                                </div>
+                                ${flechasHTML}
+                                ${dotsHTML}
+                            </div>
+                            <div class="card-info">
+                                <div class="card-price">$${precioFormateado}</div>
+                                <div class="card-title">${data.nombre}</div>
+                                <div class="card-category">${infoExtra}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                console.error("Error al cargar los perfumes:", error);
+                catalogo.innerHTML = "<div class='loading'>Hubo un problema cargando los perfumes.</div>";
+            }
+        }
+
+        cargarPerfumes();
+    </script>
+</body>
+</html>

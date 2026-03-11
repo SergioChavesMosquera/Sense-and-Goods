@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/logo_nombre.png" type="image/x-icon">
+    <title>S&G | Control de Stock</title>
+    
+    <link rel="stylesheet" href="assets/css/styles.css"> 
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --dark-bg: #121212; --card-bg: #1E1E1E; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--dark-bg); color: white; margin: 0; }
+        
+        /* Contenedor principal centrado */
+        .main-content { display: flex; justify-content: center; padding: 40px 20px; min-height: 80vh; }
+        .admin-container { background: var(--card-bg); padding: 30px; border-radius: 8px; border: 1px solid var(--gold); width: 100%; max-width: 900px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        
+        h2 { text-align: center; margin-bottom: 30px; letter-spacing: 2px; color: var(--gold); }
+        
+        /* Estilos de la tabla de inventario */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px 10px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { font-size: 0.9rem; vertical-align: middle; }
+        tr:hover { background-color: #252525; }
+        
+        .product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
+        
+        /* Botones de acción */
+        .btn-delete { background: #ff4c4c; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .btn-delete:hover { background: #ff1c1c; }
+
+        .btn-edit { background: #4CAF50; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.3s; margin-right: 5px; }
+        .btn-edit:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <div class="main-content">
+        <div class="admin-container">
+            <h2>INVENTARIO ACTUAL</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Detalles / Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos">
+                    <tr><td colspan="6" style="text-align: center;">Cargando inventario...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw", 
+            authDomain: "sense-and-goods.firebaseapp.com", 
+            projectId: "sense-and-goods",
+            storageBucket: "sense-and-goods.firebasestorage.app",
+            messagingSenderId: "710405027415",
+            appId: "1:710405027415:web:53c02bf3178e7515f69512"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const db = firebase.firestore();
+    </script>
+
+    <script src="assets/js/layout.js"></script>
+
+    <script>
+        // ==========================================
+        // GUARDIA DE SEGURIDAD
+        // ==========================================
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            } else if (user.email !== ADMIN_EMAIL) {
+                alert("Acceso denegado. Esta área es solo para personal autorizado.");
+                window.location.href = "index.html"; 
+            } else {
+                // Si es el jefe, cargamos los productos de la base de datos
+                cargarInventario();
+            }
+        });
+
+        // ==========================================
+        // FUNCIÓN PARA LEER Y MOSTRAR LOS PRODUCTOS
+        // ==========================================
+        async function cargarInventario() {
+            const tabla = document.getElementById('tablaProductos');
+
+            try {
+                const snapshot = await db.collection("productos").orderBy("fechaCreacion", "desc").get();
+                tabla.innerHTML = ""; // Limpiamos el mensaje de "Cargando..."
+
+                if (snapshot.empty) {
+                    tabla.innerHTML = "<tr><td colspan='6' style='text-align: center;'>No hay productos registrados aún.</td></tr>";
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+
+                    // Formateamos los detalles dependiendo de si es ropa o perfume
+                    let detalles = "-";
+                    if (data.categoria === 'ropa' && data.stock) {
+                        detalles = `S: ${data.stock.S} | M: ${data.stock.M} | L: ${data.stock.L} | XL: ${data.stock.XL}`;
+                    } else if (data.categoria === 'perfume' && data.volumen_ml) {
+                        detalles = `${data.volumen_ml.join(', ')} ml`;
+                    }
+
+                    // Validamos si tiene imagen
+                    let imgHTML = data.imagenes && data.imagenes.length > 0 
+                                ? `<img src="${data.imagenes[0]}" class="product-img" alt="${data.nombre}">` 
+                                : `<span>Sin foto</span>`;
+
+                    // Dibujamos la fila en la tabla
+                    tabla.innerHTML += `
+                        <tr>
+                            <td>${imgHTML}</td>
+                            <td><strong>${data.nombre}</strong></td>
+                            <td style="text-transform: capitalize;">${data.categoria}</td>
+                            <td>$${data.precio}</td>
+                            <td>${detalles}</td>
+                            <td>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button class="btn-edit" onclick="irAEditar('${id}')">Editar</button>
+        <button class="btn-delete" onclick="borrarProducto('${id}')">Borrar</button>
+    </div>
+</td>
+                        </tr>
+                    `;
+                });
+
+            } catch (error) {
+                console.error("Error al cargar inventario:", error);
+                tabla.innerHTML = "<tr><td colspan='6' style='text-align: center; color: red;'>Hubo un error al cargar los datos.</td></tr>";
+            }
+        }
+
+        // ==========================================
+        // FUNCIÓN PARA BORRAR UN PRODUCTO
+        // ==========================================
+        async function borrarProducto(id) {
+            const confirmar = confirm("¿Estás seguro de que deseas eliminar este producto definitivamente?");
+            if (confirmar) {
+                try {
+                    await db.collection("productos").doc(id).delete();
+                    alert("Producto eliminado con éxito.");
+                    cargarInventario(); // Recargamos la tabla para que desaparezca
+                } catch (error) {
+                    console.error("Error borrando producto:", error);
+                    alert("No se pudo eliminar el producto.");
+                }
+            }
+        }
+
+        function irAEditar(id) {
+            window.location.href = `editar.html?id=${id}`;
+        }
+    </script>
+</body>
+</html>

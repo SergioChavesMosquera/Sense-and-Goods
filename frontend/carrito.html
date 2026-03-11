@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./assets/img/logo_nombre.png" type="image/x-icon">
+    <title>S&G | Mi Carrito</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/global.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        body, main { background-color: #121212 !important; color: #ffffff; }
+
+        .cart-box {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 30px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .cart-summary {
+            background-color: #1a1a1a;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .summary-total {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #aaa;
+        }
+
+        .summary-total span {
+            font-weight: 700;
+            color: #d4af37;
+            font-size: 1.5rem;
+        }
+
+        /* Botón WhatsApp */
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: #fff;
+            border: none;
+            padding: 14px 30px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-whatsapp:hover { background-color: #1ebe5d; transform: translateY(-1px); }
+        .btn-whatsapp:disabled { background: #1a3a22; color: #555; cursor: not-allowed; transform: none; }
+
+        .btn-gold {
+            background-color: #d4af37; color: #000; border: none;
+            padding: 14px 30px; font-weight: bold;
+            font-family: 'Montserrat', sans-serif; cursor: pointer;
+            border-radius: 4px; transition: all 0.3s ease;
+            display: inline-block; text-decoration: none;
+        }
+        .btn-gold:hover { background-color: #b5952f; transform: translateY(-1px); }
+
+        /* Items del carrito */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #222;
+            padding: 20px 0;
+            gap: 15px;
+        }
+        .cart-item:last-child { border-bottom: none; }
+
+        .cart-item-left { display: flex; align-items: center; gap: 16px; }
+
+        .cart-item-img {
+            width: 80px; height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #333;
+            flex-shrink: 0;
+        }
+
+        .product-name-link {
+            text-decoration: none;
+            color: #d4af37;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .product-name-link:hover { color: #fff; }
+
+        .qty-btn {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: white;
+            cursor: pointer;
+            width: 28px; height: 28px;
+            border-radius: 3px;
+            font-size: 1rem;
+            line-height: 1;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-btn:hover { border-color: #d4af37; color: #d4af37; }
+
+        .cart-header-detail {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 12px;
+            margin-bottom: 4px;
+        }
+        .cart-header-detail span {
+            color: #444;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Aviso de nota */
+        .whatsapp-note {
+            font-size: 0.75rem;
+            color: #555;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+    <div id="header-container"></div>
+
+    <main class="container" style="flex: 1; padding: 50px 20px 80px; max-width: 900px; margin: 0 auto; width: 100%;">
+
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #d4af37; font-weight: 300; letter-spacing: 3px; font-size: 1.2rem; text-transform: uppercase; margin: 0;">Mi Carrito</h2>
+        </div>
+
+        <!-- Lista de productos -->
+        <div id="carrito-contenedor" class="cart-box">
+            <p style="color: #555; text-align: center; margin: 20px 0;">Tu carrito está vacío.</p>
+        </div>
+
+        <!-- Resumen y botón de pago -->
+        <div class="cart-summary">
+            <div class="summary-row">
+                <div class="summary-total">
+                    Total a pagar: <span id="carrito-total">$0</span>
+                </div>
+
+                <div>
+                    <button class="btn-whatsapp" id="btn-pagar" onclick="irAPagar()" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.524 5.845L.057 23.927a.5.5 0 0 0 .623.608l6.337-1.658A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 0 1-5.028-1.382l-.36-.213-3.732.977.997-3.646-.234-.374A9.818 9.818 0 1 1 12 21.818z"/>
+                        </svg>
+                        PROCEDER AL PAGO
+                    </button>
+                    <p class="whatsapp-note">📱 Se abrirá WhatsApp con tu pedido listo para enviar</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/layout.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyClbo_6fvlOxpLwUOujQ8KJOTZupr7XPdw",
+            authDomain: "sense-and-goods.firebaseapp.com",
+            projectId: "sense-and-goods",
+            storageBucket: "sense-and-goods.firebasestorage.app",
+            messagingSenderId: "710405027415",
+            appId: "1:710405027415:web:53c02bf3178e7515f69512"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+
+        const auth = firebase.auth();
+        const db   = firebase.firestore();
+
+        // Items en memoria para el botón de WhatsApp
+        let itemsActuales = [];
+        let totalActual   = 0;
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                cargarCarrito(user.uid);
+            } else {
+                document.getElementById('carrito-contenedor').innerHTML = `
+                    <div style="text-align:center; padding: 20px 0;">
+                        <p style="color:#666; margin-bottom:20px;">Inicia sesión para ver tu carrito.</p>
+                        <a href="login.html" class="btn-gold">IR A INICIAR SESIÓN</a>
+                    </div>`;
+            }
+        });
+
+        function cargarCarrito(uid) {
+            const contenedor = document.getElementById('carrito-contenedor');
+            const totalEl    = document.getElementById('carrito-total');
+            const btnPagar   = document.getElementById('btn-pagar');
+
+            db.collection("usuarios").doc(uid).collection("carrito").onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    contenedor.innerHTML = `<p style="color:#555; text-align:center; margin: 20px 0;">Tu carrito está vacío.</p>`;
+                    totalEl.innerText = "$0";
+                    btnPagar.disabled = true;
+                    itemsActuales = [];
+                    totalActual   = 0;
+                    return;
+                }
+
+                let html  = `<div class="cart-header-detail"><span>Producto</span><span>Subtotal</span></div>`;
+                let total = 0;
+                itemsActuales = [];
+
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    const idDoc = doc.id;
+                    total += (item.precio * item.cantidad);
+                    itemsActuales.push(item);
+
+                    html += `
+                        <div class="cart-item">
+                            <div class="cart-item-left">
+                                <a href="product.html?id=${item.producto_id}">
+                                    <img src="${item.imagen}" class="cart-item-img" alt="${item.nombre}">
+                                </a>
+                                <div>
+                                    <a href="product.html?id=${item.producto_id}" class="product-name-link">${item.nombre}</a>
+                                    <small style="color:#666; display:block; margin: 5px 0; font-size:0.78rem;">
+                                        ${item.categoria === 'ropa' ? 'Talla' : 'Volumen'}: <strong style="color:#aaa">${item.talla_o_volumen}</strong>
+                                    </small>
+                                    <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+                                        <button class="qty-btn" onclick="actualizarCantidad('${idDoc}', ${item.cantidad - 1})">−</button>
+                                        <span style="font-size:0.9rem; font-weight:600; min-width:24px; text-align:center;">${item.cantidad}</span>
+                                        <button class="qty-btn" onclick="actualizarCantidad('${idDoc}', ${item.cantidad + 1})">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align:right; flex-shrink:0;">
+                                <p style="margin:0; color:#d4af37; font-weight:700; font-size:1.1rem;">
+                                    $${(item.precio * item.cantidad).toLocaleString('es-CO')}
+                                </p>
+                                <button onclick="eliminarDelCarrito('${idDoc}')"
+                                    style="background:none; border:none; color:#c0392b; cursor:pointer; font-size:0.72rem; margin-top:10px; text-transform:uppercase; letter-spacing:1px; font-family:'Montserrat',sans-serif;">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>`;
+                });
+
+                contenedor.innerHTML = html;
+                totalActual = total;
+                totalEl.innerText = "$" + total.toLocaleString('es-CO');
+                btnPagar.disabled = false;
+            });
+        }
+
+        async function actualizarCantidad(idDoc, nuevaCantidad) {
+            if (nuevaCantidad < 1) return;
+            const uid = auth.currentUser?.uid;
+            if (!uid) return;
+            await db.collection("usuarios").doc(uid).collection("carrito").doc(idDoc).update({ cantidad: nuevaCantidad });
+        }
+
+        async function eliminarDelCarrito(idDoc) {
+            const uid = auth.currentUser?.uid;
+            if (!uid) return;
+            await db.collection("usuarios").doc(uid).collection("carrito").doc(idDoc).delete();
+        }
+
+        // ---- Botón de pago por WhatsApp ----
+        function irAPagar() {
+            if (!itemsActuales.length) return;
+
+            let mensaje = '🛍️ *Hola! Quiero realizar un pedido en Sense & Goods:*\n\n';
+
+            itemsActuales.forEach((item, i) => {
+                mensaje += `*${i + 1}. ${item.nombre}*\n`;
+                mensaje += `   • ${item.categoria === 'ropa' ? 'Talla' : 'Volumen'}: ${item.talla_o_volumen}\n`;
+                mensaje += `   • Cantidad: ${item.cantidad}\n`;
+                mensaje += `   • Subtotal: $${(item.precio * item.cantidad).toLocaleString('es-CO')}\n\n`;
+            });
+
+            mensaje += `━━━━━━━━━━━━━━━━━━\n`;
+            mensaje += `💰 *Total: $${totalActual.toLocaleString('es-CO')}*\n\n`;
+            mensaje += `Por favor confirmar disponibilidad y método de pago. ¡Gracias! 🙌`;
+
+            const url = `https://wa.me/573128036725?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+/* =========================================
+   SENSE & GOODS - Global Styles
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap');
+
+:root {
+    /* Tu Paleta de Colores Original */
+    --sg-bg-primary: #F9F9F6;      /* Fondo principal (Crema) */
+    --sg-text-main: #1A1A1A;       /* Texto principal (Negro Mate) */
+    --sg-btn-bg: #2D2D2D;          /* Gris oscuro para botones base */
+    --sg-accent-soft: #A3805B;     /* Arena para detalles sutiles */
+    --sg-accent-strong: #D4AF37;   /* Dorado Fuerte para resaltar */
+    
+    --font-main: 'Montserrat', sans-serif;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--sg-bg-primary);
+    color: var(--sg-text-main);
+    margin: 0;
+    padding: 0;
+    /* ¡Sin flexbox para evitar la pantalla congelada! */
+}
+
+h1, h2, h3, .logo {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
